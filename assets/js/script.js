@@ -38,8 +38,6 @@ function drop(e){
 
     let newElement;
     switch(type){
-        //case 'text':
-        //    newElement = createEditableTextInput();
         case 'big-heading':
             newElement = createBigHeading();
             break;
@@ -49,11 +47,21 @@ function drop(e){
         case 'paragraph':
             newElement = createParagraph();
             break;
+        case 'text':
+            newElement = createEditableTextInput();
+        case 'textarea':
+            newElement = createEditableTextArea();
+        case 'select':
+            newElement = createEditableDropdown();
+        case 'radio':
+            newElement = createEditableRadioGroup();
+        case 'checkbox':
+            newElement = createEditableCheckboxGroup();
         default:
             newElement = createBigHeading();
     }
 
-    if (newElement){
+    if (newElement){a
         formBuilder.appendChild(newElement);
         makeElementDraggable(newElement);
         toggleSubmitButton();
@@ -113,6 +121,94 @@ function createParagraph(){
 
     return div;
 }
+
+function createEditableTextInput(){
+    const div = document.createElement('div');
+    div.setAttribute('draggable', true);
+    div.classList.add('form-element', 'textInputDiv');
+
+    const labelInput = document.createElement('input');
+    labelInput.type = 'text';
+    labelInput.classList.add('label-edit');
+    labelInput.value = 'Text Input Label';
+
+    const inputElement = document.createElement('input');
+    inputElement.placeholder = 'Sample Filed (non-editable)';
+
+    div.appendChild(labelInput);
+    div.appendChild(inputElement);
+    const deleteButton = createDeleteButton();
+    div.appendChild(deleteButton);
+    return div;
+}
+
+function createEditableTextArea(){
+    const div = document.createElement('div');
+    div.setAttribute('draggable', true);
+    div.classList.add('form-element', 'textAreaDiv');
+
+    const labelInput = document.createElement('input');
+    labelInput.type = 'text';
+    labelInput.classList.add('label-edit');
+    labelInput.value = 'Text Area Label';
+
+    const inputElement = document.createElement('textarea');
+    inputElement.placeholder = 'Sample Filed (non-editable)';
+
+    div.appendChild(labelInput);
+    div.appendChild(inputElement);
+    const deleteButton = createDeleteButton();
+    div.appendChild(deleteButton);
+    return div;
+}
+
+function createEditableDropdown(){
+  const div = document.createElement('div');
+  div.setAttribute('draggable', true);
+  div.classList.add('form-element', 'SelectDiv');
+
+    const labelInput = document.createElement('input');
+    labelInput.type = 'text';
+    labelInput.classList.add('label-edit');
+    labelInput.value = 'Dropdown Label';
+
+    const optionsContainer = document.createElement('div');
+    optionsContainer.classList.add('option-container');
+
+    const option1 = createOption('Option 1');
+    const option2 = createOption('Option 2');
+
+    optionsContainer.appendChild(option1);
+    optionsContainer.appendChild(option2);
+
+    const addOptionButton = document.createElement('button');
+    addOptionButton.type = 'button';
+    addOptionButton.textContent = 'Add option';
+
+    addOptionButton.textContent = 'Add Option';
+
+    addOptionButton.onclick = () => {
+      const newOption = createOption(`Option ${optionsContainer.children.length + 1}`);
+      optionsContainer.appendChild(newOption);
+    }
+
+    const deleteButton = createDeleteButton();
+
+    div.appendChild(labelInput);
+    div.appendChild(optionsContainer);
+    div.appendChild(addOptionButton);
+    div.appendChild(deleteButton);
+
+    return div;
+}
+
+
+
+function createEditableRadioGroup(){}
+
+function createEditableCheckboxGroup(){}
+
+function createOption(){}
 
 function createDeleteButton(){
     const deleteButton = document.createElement('button');
