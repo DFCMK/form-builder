@@ -1,10 +1,13 @@
 const draggables = document.querySelectorAll('.draggable');
 const formBuilder = document.getElementById('form-builder');
+let submitButton;
 
 draggables.forEach(draggable => {
   draggable.addEventListener('dragstart', dragStart);
   draggable.addEventListener('dragend', dragEnd);
 });
+
+function handleSubmit(){}
 
 function makeElementDraggable(element) {
   element.addEventListener('dragstart', dragStart);
@@ -19,7 +22,7 @@ formBuilder.addEventListener('dragleave', () => {
 });
 
 function dragStart(e) {
-  e.dataTransfer.setData('type', e.target.getAttribute('data-type'));
+  e.dataTransfer.setData('draggedElementId', e.target.id);
   e.target.classList.add('dragging');
 }
 
@@ -28,8 +31,34 @@ function dragEnd(e) {
 }
 
 function dragOver(e) {
+
   e.preventDefault();
-  formBuilder.classList.add('drag-active');
+  const afterElement = getDragAfterElement(formBuilder, e.clientY);
+  const draggable = document.querySelector(".dragging");
+
+  if(afterElement == null){
+    formBuilder.appendChild(draggable);
+  }else{
+    formBuilder.insertBefore(draggable, afterElement);
+  }
+}
+
+function getDragAfterElement(container, y){
+    const draggableElements = [...container.querySelectorAll('.form-element:not(.dragging)')];
+
+    return draggableElements.reduce((closest, child)=>{
+
+        // Gets elements position and dimension
+        const box = child.getBouningClientReact();
+
+        const offset = y -box.top -box.height/2;
+
+        if(offset < 0 && offset > closest.offset){
+            return {offset:offset, element : child}
+        }else{
+            return closest;
+        }
+    }, {offset : Number.NEGATIVE_INFINITY}).element
 }
 
 function drop(e){
@@ -39,18 +68,18 @@ function drop(e){
     let newElement;
     switch(type){
         case 'big-heading':
-            newElement = createBigHeading();
+            newElement = createText('bigHead');
             break;
         case 'small-heading':
-            newElement = createSmallHeading();
+            newElement = createText('smallHead');
             break;
         case 'paragraph':
-            newElement = createParagraph();
+            newElement = createText('paragraph');
             break;
-        case 'text':
-            newElement = createEditableTextInput();
+        case 'textinput':
+            newElement = createEditableTextInput('textInpt');
         case 'textarea':
-            newElement = createEditableTextArea();
+            newElement = createEditableTextArea('textArea');
         case 'select':
             newElement = createEditableMCQ('select');
         case 'radio':
@@ -58,43 +87,28 @@ function drop(e){
         case 'checkbox':
             newElement = createEditableMCQ('checkboxt');
         default:
-            newElement = createBigHeading();
+            newElement = createText();
     }
 
-    if (newElement){a
+    if (newElement){
         formBuilder.appendChild(newElement);
         makeElementDraggable(newElement);
         toggleSubmitButton();
     }
 }
 
-function createBigHeading(){
+function createText(type){
     const div = document.createElement('div');
     div.setAttribute('draggable', true);
-    div.classList.add('bigHeadDiv');
+    div.classList.add(`${type}Div`);
 
     const labelInput = document.createElement('input');
     labelInput.type = 'text';
-    labelInput.classList.add('bigHeadInput');
+    labelInput.classList.add(`${type}Input`);
     labelInput.value = '--change this Big Heading-';
 
-    div.appendChild(labelInput);
-
-    const deleteButton = createDeleteButton();
-    div.appendChild(deleteButton);
-
-    return div;
-}
-
-function createSmallHeading(){
-    const div = document.createElement('div');
-    div.setAttribute('draggable', true);
-    div.classList.add('smallHeadDiv');
-
-    const labelInput = document.createElement('input');
-    labelInput.type = 'text';
-    labelInput.classList.add('smallHeadInput');
-    labelInput.value = '--change this Small Heading-';
+    if(type == 'smallHead') labelInput.value = '--Change this Small Heading-';
+    if(type == 'Paragraph') labelInput.value = '--Change this Paragraph-';
 
     div.appendChild(labelInput);
 
@@ -104,35 +118,31 @@ function createSmallHeading(){
     return div;
 }
 
-function createParagraph(){
+
+function createEditableTextInput(type){
+    let divname = 'textInputDiv';
+
+    if(type == 'textArea'){
+        divname = 'textAreaDiv';
+    }else{
+        divname = 'textInputDiv';
+    }
+
     const div = document.createElement('div');
     div.setAttribute('draggable', true);
-    div.classList.add('ParagraphDiv');
-
-    const labelInput = document.createElement('input');
-    labelInput.type = 'text';
-    labelInput.classList.add('smallHeadInput');
-    labelInput.value = '--change this paragraph-';
-
-    div.appendChild(labelInput);
-
-    const deleteButton = createDeleteButton();
-    div.appendChild(deleteButton);
-
-    return div;
-}
-
-function createEditableTextInput(){
-    const div = document.createElement('div');
-    div.setAttribute('draggable', true);
-    div.classList.add('form-element', 'textInputDiv');
+    div.classList.add('form-element', divname);
 
     const labelInput = document.createElement('input');
     labelInput.type = 'text';
     labelInput.classList.add('label-edit');
-    labelInput.value = 'Text Input Label';
+    labelInput.value = 'edit this' + type + 'label';
 
     const inputElement = document.createElement('input');
+    if(type == 'textArea'){
+        inputElement = document-createElement('textarea');
+    }
+
+
     inputElement.placeholder = 'Sample Filed (non-editable)';
 
     div.appendChild(labelInput);
@@ -246,4 +256,20 @@ function createDeleteButton(){
     return deleteButton;
 }
 
-function toggleSubmitButton(){}
+function toggleSubmitButton(){
+    if (formBuilder.children.length > 0){
+        if(!submitButton){
+            submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit';
+            submitButton.type = 'button';
+            submitButton.classList.add('submit-button');
+            submitButton.onclick = handleSubmit; 
+        }
+
+        formBuilder.appendChild(submitButton);
+    }else{
+        
+        submitButton.remove();
+        submitButton = null;
+    }
+}
