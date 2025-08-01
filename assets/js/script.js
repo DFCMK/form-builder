@@ -52,11 +52,11 @@ function drop(e){
         case 'textarea':
             newElement = createEditableTextArea();
         case 'select':
-            newElement = createEditableDropdown();
+            newElement = createEditableMCQ('select');
         case 'radio':
-            newElement = createEditableRadioGroup();
+            newElement = createEditableMCQ('radio');
         case 'checkbox':
-            newElement = createEditableCheckboxGroup();
+            newElement = createEditableMCQ('checkboxt');
         default:
             newElement = createBigHeading();
     }
@@ -162,7 +162,11 @@ function createEditableTextArea(){
     return div;
 }
 
-function createEditableDropdown(){
+function createEditableMCQ(type){
+
+  let divname = 'SelectDiv';
+  if(type == 'radio') divname = 'RadioDiv';
+  if(type == 'checkbox') divname = 'CheckboxDiv';
   const div = document.createElement('div');
   div.setAttribute('draggable', true);
   div.classList.add('form-element', 'SelectDiv');
@@ -170,7 +174,7 @@ function createEditableDropdown(){
     const labelInput = document.createElement('input');
     labelInput.type = 'text';
     labelInput.classList.add('label-edit');
-    labelInput.value = 'Dropdown Label';
+    labelInput.value =  'edit this' + type + 'label';
 
     const optionsContainer = document.createElement('div');
     optionsContainer.classList.add('option-container');
@@ -208,7 +212,27 @@ function createEditableRadioGroup(){}
 
 function createEditableCheckboxGroup(){}
 
-function createOption(){}
+function createOption(defaultText){
+    const optionDiv = createElement('div');
+    optionDiv.classListadd('option-edit');
+
+    const optionInput = document.createElement('input');
+    optionInput.type = 'text';
+    optionInput.value = defaultText;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Remove';
+    deleteButton.type = 'button';
+    deleteButton.classList.add('delete-button');
+    deleteButton.onclick = function () {
+        optionDiv.remove();
+    }
+
+    optionDiv.appendChild(optionInput);
+    optionDiv.appendChild(deleteButton);
+
+    return optionDiv;
+}
 
 function createDeleteButton(){
     const deleteButton = document.createElement('button');
