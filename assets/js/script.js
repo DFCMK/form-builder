@@ -36,6 +36,10 @@ function handleSubmit(){
             value: label,
             type: elementType
         })
+
+        localStorage.setItem('formData', JSON.stringify(formData));
+
+        window.location.href = 'index.html';
     }
 
     if(child.classList.contains('textInputDiv') || child.classList.contains('textAreaDiv')){
