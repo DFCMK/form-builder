@@ -7,7 +7,76 @@ draggables.forEach(draggable => {
   draggable.addEventListener('dragend', dragEnd);
 });
 
-function handleSubmit(){}
+function handleSubmit(){
+    const formData = [];
+
+    Array.form(formBuilder.children).forEach((child) =>{
+        if((child.classList.contains('bigHeadDiv') && child.querySelector('.bigHeadInput')) || 
+        child.classList.contains('smallHeadDiv') && child.querySelector('.smallHeadInput') ||
+        child.classList.contains('paragraphDiv') && child.querySelector('.paragraphInput')
+
+    ){
+        let label = '';
+        let elementType = '';
+
+        if (child.querySelector('bigHeadInput')){
+            label = child.querySelector('.bigHeadInput').value;
+            elementType = 'bigHead';
+        }
+        if (child.querySelector('smallHeadInput')){
+            label = child.querySelector('.smallHeadInput').value;
+            elementType = 'samllHead';
+        }
+        if (child.querySelector('paragraphInput')){
+            label = child.querySelector('.pragraphInput').value;
+            elementType = 'paragraphInput';
+        }
+
+        formData.push({
+            value: label,
+            type: elementType
+        })
+    }
+
+    if(child.classList.contains('textInputDiv') || child.classList.contains('textAreaDiv')){
+        const label = child.querySelector('.label-edit').value;
+        let elementType = '';
+
+        if(child.classList.contains('textInputDiv')) elementType = 'textInput'
+        if(child.classList.contains('textAreaDiv')) elementType = 'textArea'
+        formData.push({
+            value: label,
+            type: elementType
+        })
+    }
+
+    if(child.classList.contains('SelectDiv') ||
+    child.classList.contains('RadioDiv') ||
+    child.classList.contains('CheckBoxDiv')){
+        
+        const label = child.querySelector('.label-edit').value;
+        const optionValues = [];
+
+        const AllOptionsList = child.queryselector('.options-container');
+        const options = AllOptionsList.querySelectorAll('.option-edit');
+
+        options.forEach(option => {
+            const optionValue = option.querySelector('input').value;
+            optionValues.push(optionValue);
+        })
+
+        let elementType = '';
+        if (child.classList.contains('SelectDiv')) elementType='select';
+        else if(child.classList.contains('RadioDiv')) elementType = 'radio';
+        else if(child.classList.contains('CheckBoxDiv')) elementType = 'checkBox'
+        formData.push({
+            value: label,
+            type: elementType,
+            options: optionValues
+        })
+    }
+    })
+}
 
 function makeElementDraggable(element) {
   element.addEventListener('dragstart', dragStart);
