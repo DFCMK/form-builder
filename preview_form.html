@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .form-preview {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        p {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #6200ea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 20px;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background-color: #7c4dff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-preview">
+        <div id="surveyForm"></div>
+        <a href="index.html" class="back-button">Back to Builder</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const formData = JSON.parse(localStorage.getItem('formData')) || [];
+            const surveyForm = document.getElementById('surveyForm');
+
+            if (formData.length === 0) {
+                surveyForm.innerHTML = '<p>No form elements found. Please go back and build a form.</p>';
+                return;
+            }
+
+            formData.forEach(item => {
+                const formGroup = document.createElement('div');
+                formGroup.className = 'form-group';
+
+                if (item.type === 'bigHead') {
+                    const heading = document.createElement('h1');
+                    heading.textContent = item.value;
+                    formGroup.appendChild(heading);
+                } else if (item.type === 'smallHead') {
+                    const heading = document.createElement('h2');
+                    heading.textContent = item.value;
+                    formGroup.appendChild(heading);
+                } else if (item.type === 'paragraph') {
+                    const paragraph = document.createElement('p');
+                    paragraph.textContent = item.value;
+                    formGroup.appendChild(paragraph);
+                } else if (item.type === 'textInput') {
+                    const label = document.createElement('label');
+                    label.textContent = item.value;
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.placeholder = 'Enter your answer...';
+
+                    formGroup.appendChild(label);
+                    formGroup.appendChild(input);
+                } else if (item.type === 'textArea') {
+                    const label = document.createElement('label');
+                    label.textContent = item.value;
+
+                    const textarea = document.createElement('textarea');
+                    textarea.placeholder = 'Enter your response here...';
+
+                    formGroup.appendChild(label);
+                    formGroup.appendChild(textarea);
+                } else if (item.type === 'select') {
+                    const label = document.createElement('label');
+                    label.textContent = item.value;
+
+                    const select = document.createElement('select');
+                    item.options.forEach(option => {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = option;
+                        optionElement.textContent = option;
+                        select.appendChild(optionElement);
+                    });
+
+                    formGroup.appendChild(label);
+                    formGroup.appendChild(select);
+                } else if (item.type === 'radio' || item.type === 'checkbox') {
+                    const legend = document.createElement('label');
+                    legend.textContent = item.value;
+                    legend.style.display = 'block';
+                    legend.style.marginBottom = '12px';
+                    formGroup.appendChild(legend);
+
+                    item.options.forEach(option => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'option-row';
+
+                        const input = document.createElement('input');
+                        input.type = item.type;
+                        input.name = item.value.replace(/\s+/g, '-');
+                        input.id = option.replace(/\s+/g, '-');
+
+                        const optionLabel = document.createElement('label');
+                        optionLabel.htmlFor = option.replace(/\s+/g, '-');
+                        optionLabel.textContent = option;
+                        optionLabel.style.fontWeight = 'normal';
+
+                        optionDiv.appendChild(input);
+                        optionDiv.appendChild(optionLabel);
+                        formGroup.appendChild(optionDiv);
+                    });
+                }
+
+                surveyForm.appendChild(formGroup);
+            });
+        });
+    </script>
+</body>
+
+</html>
