@@ -202,6 +202,12 @@ function makeElementDraggable(element) {
 }
 
 function toggleSubmitButton() {
+    
+    if (submitButton) {
+        submitButton.remove();
+        submitButton = null;
+    }
+    
     const hasElements = formBuilder.querySelectorAll('.form-element').length > 0;
 
     if (hasElements && !submitButton) {
