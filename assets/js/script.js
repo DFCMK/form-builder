@@ -38,8 +38,10 @@ function dragOver(e) {
 
   if(afterElement == null){
     formBuilder.appendChild(draggable);
+    toggleSubmitButton();
   }else{
     formBuilder.insertBefore(draggable, afterElement);
+    toggleSubmitButton();
   }
 }
 
